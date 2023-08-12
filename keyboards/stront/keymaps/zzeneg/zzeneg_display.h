@@ -15,7 +15,7 @@ typedef enum {
 } layer_number;
 
 typedef enum {
-    _TIME = 0,
+    _TIME = 0xAA, // random value that does not conflict with VIA, must match companion app
     _VOLUME,
     _LAYOUT,
     _MEDIA_ARTIST,
@@ -24,4 +24,6 @@ typedef enum {
 
 void display_process_raw_hid_data(uint8_t *data, uint8_t length);
 void display_process_layer_state(uint8_t layer);
+#ifdef CAPS_WORD_ENABLE
 void display_process_caps_word(bool active);
+#endif

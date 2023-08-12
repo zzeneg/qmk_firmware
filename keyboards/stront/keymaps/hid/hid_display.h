@@ -6,7 +6,6 @@
 typedef enum {
     _QWERTY = 0,
     _GAME,
-    _EU,
     _NAV,
     _NUMBER,
     _SYMBOL,
@@ -15,7 +14,7 @@ typedef enum {
 } layer_number;
 
 typedef enum {
-    _TIME = 0,
+    _TIME = 0xAA, // random value that does not conflict with VIA, must match companion app
     _VOLUME,
     _LAYOUT,
     _MEDIA_ARTIST,

@@ -22,9 +22,6 @@ static lv_obj_t *label_alt;
 static lv_obj_t *label_gui;
 static lv_obj_t *label_layer;
 static lv_obj_t *label_caps;
-#ifdef CAPS_WORD_ENABLE
-static lv_obj_t *label_caps_word;
-#endif
 static lv_obj_t *label_layout;
 
 /* volume screen content */
@@ -65,7 +62,11 @@ void init_screen_home_custom(void) {
     use_flex_column(screen_home);
 
     label_volume_home = lv_label_create(screen_home);
-    lv_label_set_text(label_volume_home, "");
+    lv_label_set_text(label_volume_home, "Vol: N/A");
+
+    label_time = lv_label_create(screen_home);
+    lv_label_set_text(label_time, "hh:mm");
+    lv_obj_set_style_text_font(label_time, &lv_font_montserrat_48, LV_PART_MAIN);
 
     lv_obj_t *mods = lv_obj_create(screen_home);
     lv_obj_add_style(mods, &style_container, 0);
@@ -76,31 +77,20 @@ void init_screen_home_custom(void) {
     label_ctrl  = create_button(mods, "CTL", &style_button, &style_button_active);
     label_shift = create_button(mods, "SFT", &style_button, &style_button_active);
 
-    label_time = lv_label_create(screen_home);
-    lv_label_set_text(label_time, "00:00");
-    lv_obj_set_style_text_font(label_time, &lv_font_montserrat_48, LV_PART_MAIN);
-
-    lv_obj_t *caps = lv_obj_create(screen_home);
-    lv_obj_add_style(caps, &style_container, 0);
-    use_flex_row(caps);
-
-    label_caps = create_button(caps, "CAPS", &style_button, &style_button_active);
-#ifdef CAPS_WORD_ENABLE
-    label_caps_word = create_button(caps, "CAPS WORD", &style_button, &style_button_active);
-#endif
-
     lv_obj_t *bottom_row = lv_obj_create(screen_home);
     lv_obj_add_style(bottom_row, &style_container, 0);
 
     label_layer = lv_label_create(bottom_row);
     lv_label_set_text(label_layer, "");
-    lv_obj_align(label_layer, LV_ALIGN_LEFT_MID, 10, 0);
+    lv_obj_align(label_layer, LV_ALIGN_LEFT_MID, 20, 0);
     display_process_layer_state(0);
 
     label_layout = lv_label_create(bottom_row);
     lv_label_set_text(label_layout, "");
-    lv_obj_align(label_layout, LV_ALIGN_RIGHT_MID, -10, 0);
+    lv_obj_align(label_layout, LV_ALIGN_RIGHT_MID, -20, 0);
     set_layout_label(0);
+
+    label_caps = create_button(screen_home, "CAPS", &style_button, &style_button_active);
 }
 
 void init_screen_volume(void) {
@@ -160,7 +150,7 @@ void display_process_raw_hid_data(uint8_t *data, uint8_t length) {
 
         case _VOLUME:
             dprintf("volume %d\n", data[1]);
-            lv_label_set_text_fmt(label_volume_home, "Volume: %02d%%", data[1]);
+            lv_label_set_text_fmt(label_volume_home, "Vol: %02d%%", data[1]);
             lv_label_set_text_fmt(label_volume_arc, "%02d", data[1]);
             lv_arc_set_value(arc_volume, data[1]);
             lv_scr_load(screen_volume);
@@ -235,6 +225,6 @@ void display_process_caps(bool active) {
 #ifdef CAPS_WORD_ENABLE
 void display_process_caps_word(bool active) {
     dprint("display_process_caps_word\n");
-    toggle_state(label_caps_word, LV_STATE_PRESSED, active);
+    toggle_state(label_caps, LV_STATE_PRESSED, active);
 }
 #endif

@@ -6,8 +6,6 @@ CAPS_WORD_ENABLE = yes
 ENCODER_MAP_ENABLE = yes
 DYNAMIC_TAPPING_TERM_ENABLE = yes
 
-POINTING_DEVICE_DRIVER = cirque_pinnacle_i2c
-
 RAW_ENABLE = yes
 
 SRC +=  zzeneg_display.c \
