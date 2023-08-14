@@ -221,10 +221,3 @@ void display_housekeeping_task(void) {
 void display_process_caps(bool active) {
     toggle_state(label_caps, LV_STATE_PRESSED, active);
 }
-
-#ifdef CAPS_WORD_ENABLE
-void display_process_caps_word(bool active) {
-    dprint("display_process_caps_word\n");
-    toggle_state(label_caps, LV_STATE_PRESSED, active);
-}
-#endif

@@ -4,6 +4,7 @@
 #include QMK_KEYBOARD_H
 
 #include "zzeneg_display.h"
+#include "display.h"
 #include "raw_hid.h"
 #include "transactions.h"
 
@@ -156,10 +157,10 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 /* helper function for custom increased tapping term for home row CTRL + other keys */
 uint16_t HOME_CTRL_pressed_time = 0;
 void     custom_home_row_ctrl(keyrecord_t *record, uint16_t time) {
-    if (record->tap.count && get_mods() & MOD_MASK_CTRL) {
-        if (TIMER_DIFF_16(record->event.time, HOME_CTRL_pressed_time) < time) {
-            del_mods(MOD_MASK_CTRL);
-            tap_code(KC_D);
+        if (record->tap.count && get_mods() & MOD_MASK_CTRL) {
+            if (TIMER_DIFF_16(record->event.time, HOME_CTRL_pressed_time) < time) {
+                del_mods(MOD_MASK_CTRL);
+                tap_code(KC_D);
         }
     }
 }
@@ -168,16 +169,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     dprintf("process_record_user %u %s %s %d\n", keycode, record->event.pressed ? "pressed" : "depressed", record->tap.interrupted ? "interrupted" : "not interrupted", record->tap.count);
 
     if (record->event.pressed) {
-        uint8_t data[32];
-        data[0] = 0;
-
         switch (keycode) {
-            // send hid commands
-            case KC_VOLU:
-            case KC_VOLD:
-                data[0] = _VOLUME;
-                break;
-
             // handle macros
             case M_EMAIL:
                 SEND_STRING("zzeneg@gmail.com");
@@ -211,11 +203,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 custom_home_row_ctrl(record, 180);
                 break;
         }
-
-        if (data[0]) {
-            dprintf("raw_hid_send %u\n", data[0]);
-            raw_hid_send(data, sizeof(data));
-        }
     }
 
     return true;
@@ -237,7 +224,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 /* Caps Word processing */
 void caps_word_set_user(bool active) {
     if (is_display_enabled()) {
-        display_process_caps_word(active);
+        display_process_caps(active);
     } else if (is_keyboard_master() && !is_keyboard_left()) {
         dprintf("RPC_ID_USER_CAPS_WORD_SYNC: %s\n", active ? "active" : "inactive");
         transaction_rpc_send(RPC_ID_USER_CAPS_WORD_SYNC, 1, &active);
@@ -291,7 +278,7 @@ void layer_sync(uint8_t initiator2target_buffer_size, const void *initiator2targ
 
 void caps_word_sync(uint8_t initiator2target_buffer_size, const void *initiator2target_buffer, uint8_t target2initiator_buffer_size, void *target2initiator_buffer) {
     if (is_display_enabled()) {
-        display_process_caps_word(*(bool *)initiator2target_buffer);
+        display_process_caps(*(bool *)initiator2target_buffer);
     }
 }
 
