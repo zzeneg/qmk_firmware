@@ -212,7 +212,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 layer_state_t layer_state_set_user(layer_state_t state) {
     if (is_display_enabled()) {
         display_process_layer_state(get_highest_layer(state));
-    } else if (is_keyboard_master() && !is_keyboard_left()) {
+    } else if (is_keyboard_master() && !is_display_side()) {
         uint8_t layer = get_highest_layer(state);
         dprintf("RPC_ID_USER_LAYER_SYNC: %u\n", layer);
         transaction_rpc_send(RPC_ID_USER_LAYER_SYNC, 1, &layer);
@@ -225,7 +225,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 void caps_word_set_user(bool active) {
     if (is_display_enabled()) {
         display_process_caps(active);
-    } else if (is_keyboard_master() && !is_keyboard_left()) {
+    } else if (is_keyboard_master() && !is_display_side()) {
         dprintf("RPC_ID_USER_CAPS_WORD_SYNC: %s\n", active ? "active" : "inactive");
         transaction_rpc_send(RPC_ID_USER_CAPS_WORD_SYNC, 1, &active);
     }
@@ -258,7 +258,7 @@ void raw_hid_receive(uint8_t *data, uint8_t length) {
 
     if (is_display_enabled()) {
         display_process_raw_hid_data(data, length);
-    } else if (is_keyboard_master() && !is_keyboard_left()) {
+    } else if (is_keyboard_master() && !is_display_side()) {
         dprint("RPC_ID_USER_HID_SYNC \n");
         transaction_rpc_send(RPC_ID_USER_HID_SYNC, length, data);
     }

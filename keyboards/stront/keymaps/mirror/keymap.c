@@ -1,11 +1,19 @@
-// Copyright 2022 zzeneg (@zzeneg)
+// Copyright 2023 zzeneg (@zzeneg)
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include QMK_KEYBOARD_H
 
-#include "hid_display.h"
-#include "raw_hid.h"
-#include "transactions.h"
+enum layer_number {
+    // clang-format off
+    _QWERTY = 0,
+    _GAME,
+    _NAV,
+    _NUMBER,
+    _SYMBOL,
+    _FUNC,
+    _SYS
+    // clang-format on
+};
 
 // Left-hand home row mods
 #define HOME_A LGUI_T(KC_A)
@@ -97,35 +105,3 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     )
     // clang-format on
 };
-
-/* Active Layer processing */
-layer_state_t layer_state_set_user(layer_state_t state) {
-    if (is_display_enabled()) {
-        display_process_layer_state(get_highest_layer(state));
-    }
-
-    return state;
-}
-
-/* Raw HID processing*/
-void raw_hid_receive(uint8_t *data, uint8_t length) {
-    dprintf("raw_hid_receive - received %u bytes \n", length);
-
-    if (is_display_enabled()) {
-        display_process_raw_hid_data(data, length);
-    } else if (is_keyboard_master() && !is_display_side()) {
-        dprint("RPC_ID_USER_HID_SYNC \n");
-        transaction_rpc_send(RPC_ID_USER_HID_SYNC, length, data);
-    }
-}
-
-void hid_sync(uint8_t initiator2target_buffer_size, const void *initiator2target_buffer, uint8_t target2initiator_buffer_size, void *target2initiator_buffer) {
-    if (is_display_enabled()) {
-        display_process_raw_hid_data((uint8_t *)initiator2target_buffer, initiator2target_buffer_size);
-    }
-}
-
-void keyboard_post_init_user() {
-    // sync received hid data
-    transaction_register_rpc(RPC_ID_USER_HID_SYNC, hid_sync);
-}

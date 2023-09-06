@@ -18,6 +18,7 @@
 #define SPLIT_POINTING_ENABLE
 
 /* SPI config for display/touchpad */
+#define STRONT_DISPLAY_LEFT
 #define SPI_DRIVER SPID1
 #define SPI_SCK_PIN GP10
 #define SPI_MOSI_PIN GP11
