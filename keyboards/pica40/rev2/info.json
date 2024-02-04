@@ -20,7 +20,7 @@
         "extrakey": true,
         "encoder": true,
         "rgblight": true,
-        "nkro": true
+        "nkro": false
     },
     "rgblight": {
         "led_count": 1,

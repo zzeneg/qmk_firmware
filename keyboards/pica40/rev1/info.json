@@ -15,7 +15,7 @@
         "encoder": true,
         "oled": true,
         "rgblight": true,
-        "nkro": true
+        "nkro": false
     },
     "rgblight": {
         "led_count": 1,
