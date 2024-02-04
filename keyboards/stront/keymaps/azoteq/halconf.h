@@ -3,5 +3,6 @@
 
 #pragma once
 
-bool is_display_enabled(void);
-bool is_display_side(void);
+#define HAL_USE_I2C TRUE
+
+#include_next <halconf.h>

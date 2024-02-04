@@ -1,7 +1,7 @@
 // Copyright 2023 zzeneg (@zzeneg)
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "hid_display.h"
+#include "zzeneg_display.h"
 #include "display.h"
 #include "raw_hid.h"
 #include "lvgl_helpers.h"
@@ -22,7 +22,7 @@ static lv_obj_t *label_alt;
 static lv_obj_t *label_gui;
 static lv_obj_t *label_layer;
 static lv_obj_t *label_caps;
-static lv_obj_t *label_layout;
+static lv_obj_t *icon_layout;
 
 /* volume screen content */
 static lv_obj_t *arc_volume;
@@ -32,15 +32,20 @@ static lv_obj_t *label_volume_arc;
 static lv_obj_t *label_media_artist;
 static lv_obj_t *label_media_title;
 
+LV_IMG_DECLARE(flag_ru);
+LV_IMG_DECLARE(flag_uk);
+/* can be replaced with PL flag (update rules.mk as well) */
+// LV_IMG_DECLARE(flag_pl);
+
 enum layout { _EN = 0, _RU };
-void set_layout_label(uint8_t layout) {
+void set_layout_icon(uint8_t layout) {
     switch (layout) {
         case _EN:
-            lv_label_set_text(label_layout, "EN");
+            lv_img_set_src(icon_layout, &flag_uk);
             break;
 
         case _RU:
-            lv_label_set_text(label_layout, "RU");
+            lv_img_set_src(icon_layout, &flag_ru);
             break;
     }
 }
@@ -58,18 +63,18 @@ void start_home_screen_timer(void) {
 
 void init_screen_home_custom(void) {
     screen_home = lv_scr_act();
-    lv_obj_add_style(screen_home, &style_screen, 0);
+    lv_obj_add_style(screen_home, &style_screen, LV_PART_MAIN);
     use_flex_column(screen_home);
 
     label_volume_home = lv_label_create(screen_home);
     lv_label_set_text(label_volume_home, "Vol: N/A");
 
     label_time = lv_label_create(screen_home);
-    lv_label_set_text(label_time, "hh:mm");
-    lv_obj_set_style_text_font(label_time, &lv_font_montserrat_48, LV_PART_MAIN);
+    lv_label_set_text(label_time, "00:00");
+    lv_obj_set_style_text_font(label_time, &montserrat_48_digits, LV_PART_MAIN);
 
     lv_obj_t *mods = lv_obj_create(screen_home);
-    lv_obj_add_style(mods, &style_container, 0);
+    lv_obj_add_style(mods, &style_container, LV_PART_MAIN);
     use_flex_row(mods);
 
     label_gui   = create_button(mods, "GUI", &style_button, &style_button_active);
@@ -78,24 +83,24 @@ void init_screen_home_custom(void) {
     label_shift = create_button(mods, "SFT", &style_button, &style_button_active);
 
     lv_obj_t *bottom_row = lv_obj_create(screen_home);
-    lv_obj_add_style(bottom_row, &style_container, 0);
+    lv_obj_add_style(bottom_row, &style_container, LV_PART_MAIN);
 
     label_layer = lv_label_create(bottom_row);
     lv_label_set_text(label_layer, "");
     lv_obj_align(label_layer, LV_ALIGN_LEFT_MID, 20, 0);
     display_process_layer_state(0);
 
-    label_layout = lv_label_create(bottom_row);
-    lv_label_set_text(label_layout, "");
-    lv_obj_align(label_layout, LV_ALIGN_RIGHT_MID, -20, 0);
-    set_layout_label(0);
+    icon_layout = lv_img_create(bottom_row);
+    lv_obj_set_style_radius(icon_layout, 4, 0);
+    lv_obj_set_style_clip_corner(icon_layout, true, 0);
+    lv_obj_align(icon_layout, LV_ALIGN_RIGHT_MID, -20, 0);
 
     label_caps = create_button(screen_home, "CAPS", &style_button, &style_button_active);
 }
 
 void init_screen_volume(void) {
     screen_volume = lv_obj_create(NULL);
-    lv_obj_add_style(screen_volume, &style_screen, 0);
+    lv_obj_add_style(screen_volume, &style_screen, LV_PART_MAIN);
 
     arc_volume = lv_arc_create(screen_volume);
     lv_obj_set_size(arc_volume, 200, 200);
@@ -103,12 +108,12 @@ void init_screen_volume(void) {
 
     label_volume_arc = lv_label_create(screen_volume);
     lv_label_set_text(label_volume_arc, "00");
-    lv_obj_set_style_text_font(label_volume_arc, &lv_font_montserrat_48, LV_PART_MAIN);
+    lv_obj_set_style_text_font(label_volume_arc, &montserrat_48_digits, LV_PART_MAIN);
     lv_obj_center(label_volume_arc);
 
     lv_obj_t *volume_text_label = lv_label_create(screen_volume);
     lv_label_set_text(volume_text_label, "Volume");
-    lv_obj_align(volume_text_label, LV_ALIGN_BOTTOM_MID, 0, -10);
+    lv_obj_align(volume_text_label, LV_ALIGN_BOTTOM_MID, 0, -20);
 }
 
 void init_screen_media(void) {
@@ -159,7 +164,7 @@ void display_process_raw_hid_data(uint8_t *data, uint8_t length) {
 
         case _LAYOUT:
             dprintf("layout %d\n", data[1]);
-            set_layout_label(data[1]);
+            set_layout_icon(data[1]);
             break;
 
         case _MEDIA_ARTIST:
@@ -187,6 +192,9 @@ void display_process_layer_state(uint8_t layer) {
             break;
         case _GAME:
             lv_label_set_text(label_layer, "GAME");
+            break;
+        case _EU:
+            lv_label_set_text(label_layer, "EU");
             break;
         case _NAV:
             lv_label_set_text(label_layer, "NAV");

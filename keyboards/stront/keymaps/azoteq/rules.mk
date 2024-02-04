@@ -1,0 +1,1 @@
+POINTING_DEVICE_DRIVER = azoteq_iqs5xx
