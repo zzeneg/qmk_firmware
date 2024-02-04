@@ -1,0 +1,19 @@
+// Copyright 2022 zzeneg (@zzeneg)
+// SPDX-License-Identifier: GPL-2.0-or-later
+
+#pragma once
+
+#define SERIAL_USART_FULL_DUPLEX
+#define SERIAL_USART_PIN_SWAP
+#define SERIAL_USART_TX_PIN GP0
+#define SERIAL_USART_RX_PIN GP1
+
+#define BOOTMAGIC_LITE_ROW 0
+#define BOOTMAGIC_LITE_COLUMN 1
+
+#define RP2040_BOOTLOADER_DOUBLE_TAP_RESET
+#define RP2040_BOOTLOADER_DOUBLE_TAP_RESET_TIMEOUT 500U
+
+#ifdef RGB_MATRIX_ENABLE
+#    define RGB_MATRIX_LED_COUNT RGBLED_NUM
+#endif
