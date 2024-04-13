@@ -11,12 +11,9 @@
 
 // enable custom encoder functionality for Pica40
 #ifdef ENCODER_ENABLE
-#   include "encoder.h"
-#   include "transactions.h"
-#   ifndef ENCODER_MAP_KEY_DELAY
-#       define ENCODER_MAP_KEY_DELAY 2
-#   endif
-#   ifndef ENCODER_RESOLUTION
-#       define ENCODER_RESOLUTION 4
-#   endif
+#    include "encoder.h"
+#    include "transactions.h"
+#    ifndef ENCODER_MAP_KEY_DELAY
+#        define ENCODER_MAP_KEY_DELAY 2
+#    endif
 #endif

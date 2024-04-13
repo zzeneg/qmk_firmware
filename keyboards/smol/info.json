@@ -70,9 +70,12 @@
         "rgb_matrix": true,
         "nkro": false
     },
+    "ws2812": {
+        "driver": "vendor",
+        "pin": "GP28"
+    },
     "rgblight": {
         "led_count": 36,
-        "pin": "GP28",
         "split": true,
         "split_count": [18, 18],
         "layers": {
@@ -81,7 +84,7 @@
         }
     },
     "rgb_matrix": {
-        "driver": "WS2812",
+        "driver": "ws2812",
         "led_count": 36,
         "split_count": [18, 18],
         "layout": [

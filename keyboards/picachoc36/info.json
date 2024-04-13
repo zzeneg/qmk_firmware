@@ -6,7 +6,7 @@
     "layouts": {
         "LAYOUT": {
             "layout": [
-                { "matrix": [0, 0], "x": 1, "y": 0 },
+                { "matrix": [0, 0], "x": 0, "y": 1 },
                 { "matrix": [0, 1], "x": 2, "y": 0 },
                 { "matrix": [0, 2], "x": 3, "y": 0 },
                 { "matrix": [0, 3], "x": 4, "y": 0 },
@@ -15,7 +15,7 @@
                 { "matrix": [4, 3], "x": 7, "y": 0 },
                 { "matrix": [4, 2], "x": 8, "y": 0 },
                 { "matrix": [4, 1], "x": 9, "y": 0 },
-                { "matrix": [4, 0], "x": 10, "y": 0 },
+                { "matrix": [4, 0], "x": 11, "y": 1 },
                 { "matrix": [1, 0], "x": 1, "y": 1 },
                 { "matrix": [1, 1], "x": 2, "y": 1 },
                 { "matrix": [1, 2], "x": 3, "y": 1 },
@@ -68,9 +68,12 @@
         "rgblight": true,
         "nkro": false
     },
+    "ws2812": {
+        "driver": "vendor",
+        "pin": "GP12"
+    },
     "rgblight": {
         "led_count": 1,
-        "pin": "GP12",
         "split": true,
         "layers": {
             "enabled": true,
