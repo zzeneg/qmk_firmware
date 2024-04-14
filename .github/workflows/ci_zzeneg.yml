@@ -18,8 +18,20 @@ on:
 concurrency: ci_build-${{ github.event.inputs.branch || github.ref_name }}
 
 jobs:
+  branch_name:
+    name: Get branch name
+    runs-on: ubuntu-latest
+    outputs:
+      value: ${{ steps.clean_branch.outputs.value }}
+    steps:
+      - name: Clean branch name
+        id: clean_branch
+        run: echo value=${{ github.event.inputs.branch || github.ref_name }} | tr "[:upper:]" "[:lower:]" | sed -e 's|feature/||g' >> "$GITHUB_OUTPUT"
+
   ci_builds:
     name: Build zzeneg keyboards
+    needs:
+      - branch_name
     runs-on: ubuntu-latest
 
     strategy:
@@ -28,10 +40,6 @@ jobs:
     container: ghcr.io/qmk/qmk_cli
 
     steps:
-      - name: Clean branch name
-        id: clean-branch
-        run: echo value=${{ github.event.inputs.branch || github.ref_name }} | tr "[:upper:]" "[:lower:]" | sed -e 's|/|_|g' >> "$GITHUB_OUTPUT"
-
       - name: Disable safe.directory check
         run: git config --global --add safe.directory '*'
 
@@ -58,10 +66,37 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: artifacts-${{ steps.clean-branch.outputs.value }}
+          name: artifacts-${{ needs.branch_name.outputs.value }}
           if-no-files-found: ignore
           path: |
             *.bin
             *.hex
             *.uf2
             .build/failed.*
+
+  pre-release:
+    name: Pre-Release
+    needs:
+      - branch_name
+      - ci_builds
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "write"
+      packages: "write"
+      pull-requests: "read"
+
+    steps:
+      - name: Download files
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts-${{ needs.branch_name.outputs.value }}
+          merge-multiple: true
+
+      - name: Create Release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: ${{ needs.branch_name.outputs.value }}
+          prerelease: true
+          title: "Latest from ${{ needs.branch_name.outputs.value }}"
+          files: artifacts-${{ needs.branch_name.outputs.value }}/**/*
