@@ -28,6 +28,10 @@ jobs:
     container: ghcr.io/qmk/qmk_cli
 
     steps:
+      - name: Clean branch name
+        id: clean-branch
+        run: echo value=${{ github.event.inputs.branch || github.ref_name }} | tr "[:upper:]" "[:lower:]" | sed -e 's|/|_|g' >> "$GITHUB_OUTPUT"
+
       - name: Disable safe.directory check
         run: git config --global --add safe.directory '*'
 
@@ -54,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: artifacts-${{ github.event.inputs.branch || github.ref_name }}-${{ matrix.keymap }}
+          name: artifacts-${{ steps.clean-branch.outputs.value }}
           if-no-files-found: ignore
           path: |
             *.bin
