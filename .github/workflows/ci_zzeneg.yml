@@ -37,7 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        keymap: [default, hid, zzeneg]
+        keymap: [default, hid]
 
     container: ghcr.io/qmk/qmk_cli
 
